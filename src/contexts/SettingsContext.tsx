@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { AISettings } from './AIContext';
 
 export interface GoogleSheetsSettings {
@@ -27,13 +27,11 @@ const initialSettings: AppSettings = {
   }
 };
 
-// Function to load settings from localStorage
 const loadSettings = (): AppSettings => {
   try {
     const savedSettings = localStorage.getItem('app-settings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
-      // Merge with initial settings to ensure all keys are present
       return {
         aiSettings: { ...initialSettings.aiSettings, ...parsed.aiSettings },
         googleSheetsSettings: { ...initialSettings.googleSheetsSettings, ...parsed.googleSheetsSettings }
@@ -50,7 +48,11 @@ type SettingsAction = { type: 'UPDATE_SETTINGS'; payload: Partial<AppSettings> }
 const settingsReducer = (state: AppSettings, action: SettingsAction): AppSettings => {
   switch (action.type) {
     case 'UPDATE_SETTINGS':
-      const newState = { ...state, ...action.payload };
+      const newState = { 
+        ...state,
+        aiSettings: { ...state.aiSettings, ...action.payload.aiSettings },
+        googleSheetsSettings: { ...state.googleSheetsSettings, ...action.payload.googleSheetsSettings }
+      };
       try {
         localStorage.setItem('app-settings', JSON.stringify(newState));
       } catch (error) {
