@@ -9,7 +9,6 @@ import SettingsPage from "./pages/SettingsPage";
 import { AIProvider } from "./contexts/AIContext";
 import { DashboardProvider } from "./contexts/DashboardContext";
 
-
 const queryClient = new QueryClient();
 
 const App = () => (
