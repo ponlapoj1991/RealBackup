@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useAI } from '@/contexts/AIContext';
+import { useSettings } from '@/contexts/SettingsContext';
+import { toast } from "sonner";
 import { 
-  Bot, 
   Key, 
   Settings2, 
   Save, 
@@ -20,10 +20,14 @@ import {
 } from 'lucide-react';
 
 export function AISettings() {
-  const { state, updateSettings } = useAI();
-  const [localSettings, setLocalSettings] = useState(state.settings);
+  const { settings, updateSettings } = useSettings();
+  const [localSettings, setLocalSettings] = useState(settings.aiSettings);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
+
+  useEffect(() => {
+    setLocalSettings(settings.aiSettings);
+  }, [settings.aiSettings]);
 
   const handleSettingChange = (field: string, value: any) => {
     setLocalSettings(prev => ({ ...prev, [field]: value }));
@@ -31,12 +35,13 @@ export function AISettings() {
   };
 
   const handleSave = () => {
-    updateSettings(localSettings);
+    updateSettings({ aiSettings: localSettings });
     setHasUnsavedChanges(false);
+    toast.success("AI settings saved successfully!");
   };
 
   const handleReset = () => {
-    setLocalSettings(state.settings);
+    setLocalSettings(settings.aiSettings);
     setHasUnsavedChanges(false);
   };
 
@@ -208,7 +213,7 @@ export function AISettings() {
                 size="sm"
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save
+                Save Changes
               </Button>
             </div>
           </div>
