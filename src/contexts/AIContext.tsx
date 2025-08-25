@@ -1,13 +1,6 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { useSettings } from './SettingsContext';
-
-export interface AISettings {
-  systemPrompt: string;
-  model: 'gpt-4.1' | 'gpt-4' | 'gpt-3.5-turbo';
-  temperature: number;
-  maxTokens: number;
-  apiKey: string;
-}
+import { AISettings } from '@/types/settings';
 
 export interface ChatMessage {
   id: string;
