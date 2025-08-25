@@ -11,24 +11,18 @@ import {
 import Papa from 'papaparse';
 import { SocialMention } from '@/types/dashboard';
 
-// Configuration - Hard-coded values
 const SHEET_CONFIG = {
   sheetId: '1pTvDqlnGmSKbIyg2t8dRVy08uOfe-dnji8pJNd6z0Cw',
   sheetName: 'SCGDATA',
-  gid: 1494033773 // Usually 0 for first sheet, can be found in URL after #gid=
+  gid: 1494033773
 };
 
 interface GoogleSheetsUploadProps {
   onDataUpload: (data: SocialMention[]) => void;
 }
 
-// Same data processing function as Excel upload
 const processGoogleSheetData = (rawData: any[]): SocialMention[] => {
-  console.log('Processing Google Sheets data:', rawData.length, 'rows');
-  console.log('Sample row:', rawData[0]);
-  
   return rawData.map((row, index) => {
-    // Handle date field - same logic as Excel
     let dateValue = row.date || row.Date || row.DATE || '';
     if (dateValue) {
       try {
@@ -55,7 +49,6 @@ const processGoogleSheetData = (rawData: any[]): SocialMention[] => {
         dateValue = parsedDate.toISOString().split('T')[0];
         
       } catch (error) {
-        console.error('Date parsing error:', error);
         dateValue = new Date().toISOString().split('T')[0];
       }
     } else {
@@ -79,17 +72,6 @@ const processGoogleSheetData = (rawData: any[]): SocialMention[] => {
       shares: parseInt(String(row.Share || row.Shares || row.shares || '0')) || 0
     };
 
-    // Debug log for first few rows
-    if (index < 3) {
-      console.log(`Google Sheets processed row ${index + 1}:`, {
-        originalDate: row.date,
-        processedDate: processedRow.date,
-        sentiment: processedRow.sentiment,
-        channel: processedRow.channel,
-        engagement: processedRow.total_engagement
-      });
-    }
-
     return processedRow;
   });
 };
@@ -101,7 +83,6 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
   const [success, setSuccess] = useState(false);
 
   const buildCSVUrl = () => {
-    // Google Sheets CSV export URL format
     return `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/export?format=csv&gid=${SHEET_CONFIG.gid}`;
   };
 
@@ -113,14 +94,9 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
 
     try {
       setProgress(20);
-      
-      // Build CSV export URL
       const csvUrl = buildCSVUrl();
-      console.log('Fetching from Google Sheets:', csvUrl);
-      
       setProgress(40);
       
-      // Fetch CSV data from Google Sheets
       const response = await fetch(csvUrl, {
         mode: 'cors',
         cache: 'no-cache'
@@ -137,28 +113,14 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
         throw new Error('No data received from Google Sheets');
       }
       
-      console.log('CSV data received, length:', csvText.length);
-      console.log('First 200 chars:', csvText.substring(0, 200));
-      
       setProgress(80);
       
-      // Parse CSV using Papaparse
       const parseResult = Papa.parse(csvText, {
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true,
-        transformHeader: (header) => header.trim(), // Clean headers
-        complete: (results) => {
-          console.log('Papa parse complete:', results);
-        },
-        error: (error) => {
-          console.error('Papa parse error:', error);
-        }
+        transformHeader: (header) => header.trim(),
       });
-      
-      if (parseResult.errors && parseResult.errors.length > 0) {
-        console.warn('CSV parsing warnings:', parseResult.errors);
-      }
       
       const rawData = parseResult.data;
       
@@ -166,25 +128,14 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
         throw new Error('No data rows found in Google Sheets');
       }
       
-      console.log('Raw data from Google Sheets:', rawData.length, 'rows');
-      console.log('Sample raw data:', rawData[0]);
-      console.log('Headers detected:', Object.keys(rawData[0] || {}));
-      
       setProgress(90);
       
-      // Process data using same logic as Excel
       const processedData = processGoogleSheetData(rawData);
       
-      console.log(`Google Sheets data processed: ${processedData.length} items`);
-      console.log('Sample processed data:', processedData[0]);
-      
       setProgress(100);
-      
-      // Send processed data to dashboard
       onDataUpload(processedData);
       setSuccess(true);
       
-      // Reset state after success
       setTimeout(() => {
         setSuccess(false);
         setProgress(0);
@@ -192,7 +143,6 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
       }, 2000);
       
     } catch (err) {
-      console.error('Google Sheets load error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load data from Google Sheets');
       setIsLoading(false);
       setProgress(0);
@@ -204,20 +154,21 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
       <Button 
         onClick={handleGoogleSheetsLoad}
         disabled={isLoading}
-        className="bg-green-600 hover:bg-green-700 text-white"
+        variant="outline"
+        className="w-full justify-start"
       >
         {isLoading ? (
           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
         ) : (
           <Cloud className="h-4 w-4 mr-2" />
         )}
-        {isLoading ? 'กำลังโหลด...' : 'เชื่อมต่อ Google Sheets'}
+        {isLoading ? 'Loading...' : 'Connect to Google Sheets'}
       </Button>
 
       {isLoading && (
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>กำลังโหลดข้อมูลจาก Google Sheets...</span>
+            <span>Loading data from Google Sheets...</span>
             <span>{progress}%</span>
           </div>
           <Progress value={progress} className="w-full" />
@@ -234,15 +185,9 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
       {success && (
         <Alert>
           <CheckCircle className="h-4 w-4" />
-          <AlertDescription>โหลดข้อมูลจาก Google Sheets สำเร็จ!</AlertDescription>
+          <AlertDescription>Successfully loaded data from Google Sheets!</AlertDescription>
         </Alert>
       )}
-
-      <div className="text-xs text-muted-foreground">
-        <p><strong>Google Sheets:</strong> {SHEET_CONFIG.sheetName}</p>
-        <p><strong>Sheet ID:</strong> ...{SHEET_CONFIG.sheetId.slice(-8)}</p>
-        <p>ข้อมูลจะถูกประมวลผลเหมือนกับไฟล์ Excel</p>
-      </div>
     </div>
   );
 }
