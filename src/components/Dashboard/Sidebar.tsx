@@ -11,8 +11,6 @@ import {
   Users,
   MessageCircle,
   PieChart,
-  Activity,
-  FileText,
   Settings
 } from 'lucide-react';
 
@@ -78,7 +76,6 @@ export function Sidebar({ className }: SidebarProps) {
       "flex flex-col bg-sidebar border-r border-sidebar-border h-screen",
       className
     )}>
-      {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-primary rounded-lg">
@@ -95,7 +92,6 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => {
           const isActive = currentView === item.id;
@@ -123,7 +119,6 @@ export function Sidebar({ className }: SidebarProps) {
         })}
       </nav>
 
-      {/* Filters Summary */}
       <div className="p-4 border-t border-sidebar-border">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-sidebar-foreground">
@@ -161,13 +156,12 @@ export function Sidebar({ className }: SidebarProps) {
         )}
       </div>
 
-      {/* Footer */}
       <div className="p-4 border-t border-sidebar-border">
         <Button
           variant="outline"
           size="sm"
           className="w-full"
-          onClick={() => navigate('/setting')}
+          onClick={() => navigate('/settings')}
         >
           <Settings className="h-4 w-4 mr-2" />
           Settings
