@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/SettingsPage";
 import { AIProvider } from "./contexts/AIContext";
 import { DashboardProvider } from "./contexts/DashboardContext";
+import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
 
@@ -17,15 +18,17 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AIProvider>
-          <DashboardProvider>
-            <Routes>
-              <Route path="/" element={<SocialListeningDashboard />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </DashboardProvider>
-        </AIProvider>
+        <SettingsProvider>
+          <AIProvider>
+            <DashboardProvider>
+              <Routes>
+                <Route path="/" element={<SocialListeningDashboard />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </DashboardProvider>
+          </AIProvider>
+        </SettingsProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
