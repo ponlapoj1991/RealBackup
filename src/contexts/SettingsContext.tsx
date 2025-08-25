@@ -1,16 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { AISettings } from './AIContext';
-
-export interface GoogleSheetsSettings {
-  sheetId: string;
-  sheetName: string;
-  gid: string;
-}
-
-export interface AppSettings {
-  aiSettings: AISettings;
-  googleSheetsSettings: GoogleSheetsSettings;
-}
+import { AppSettings } from '@/types/settings';
 
 const initialSettings: AppSettings = {
   aiSettings: {
@@ -48,10 +37,16 @@ type SettingsAction = { type: 'UPDATE_SETTINGS'; payload: Partial<AppSettings> }
 const settingsReducer = (state: AppSettings, action: SettingsAction): AppSettings => {
   switch (action.type) {
     case 'UPDATE_SETTINGS':
-      const newState = { 
+      const newState = {
         ...state,
-        aiSettings: { ...state.aiSettings, ...action.payload.aiSettings },
-        googleSheetsSettings: { ...state.googleSheetsSettings, ...action.payload.googleSheetsSettings }
+        aiSettings: {
+          ...state.aiSettings,
+          ...action.payload.aiSettings,
+        },
+        googleSheetsSettings: {
+          ...state.googleSheetsSettings,
+          ...action.payload.googleSheetsSettings,
+        },
       };
       try {
         localStorage.setItem('app-settings', JSON.stringify(newState));
