@@ -1,6 +1,5 @@
-// src/components/AI/AISettings.tsx - COMPLETE VERSION
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,29 +44,15 @@ export function AISettings() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Bot className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">AI Settings</h3>
-        </div>
-        {hasUnsavedChanges && (
-          <Badge variant="outline" className="text-warning border-warning">
-            มีการเปลี่ยนแปลง
-          </Badge>
-        )}
-      </div>
-
-      {/* API Configuration */}
       <Card>
         <CardHeader>
           <CardTitle className="text-md flex items-center space-x-2">
             <Key className="h-4 w-4" />
             <span>API Configuration</span>
           </CardTitle>
+          <CardDescription>Configure your OpenAI API key and model selection.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* API Key */}
           <div className="space-y-2">
             <Label htmlFor="api-key">OpenAI API Key</Label>
             <div className="flex space-x-2">
@@ -93,21 +78,20 @@ export function AISettings() {
                 size="sm"
                 onClick={() => setShowApiKey(!showApiKey)}
               >
-                {showApiKey ? 'ซ่อน' : 'แสดง'}
+                {showApiKey ? 'Hide' : 'Show'}
               </Button>
             </div>
             {localSettings.apiKey && !isApiKeyValid && (
               <p className="text-xs text-destructive flex items-center">
                 <AlertCircle className="h-3 w-3 mr-1" />
-                API Key ไม่ถูกต้อง (ต้องเริ่มด้วย 'sk-')
+                Invalid API Key (must start with 'sk-')
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              ได้รับ API Key ได้ที่ <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">platform.openai.com</a>
+              Get your API Key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">platform.openai.com</a>
             </p>
           </div>
 
-          {/* Model Selection */}
           <div className="space-y-2">
             <Label htmlFor="model">Model</Label>
             <Select 
@@ -118,50 +102,45 @@ export function AISettings() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="gpt-4">GPT-4 (แนะนำ)</SelectItem>
-                <SelectItem value="gpt-4.1">GPT-4.1 (ล่าสุด)</SelectItem>
-                <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo (เร็ว+ประหยัด)</SelectItem>
+                <SelectItem value="gpt-4">GPT-4 (Recommended)</SelectItem>
+                <SelectItem value="gpt-4.1">GPT-4.1 (Latest)</SelectItem>
+                <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast & Cost-effective)</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* AI Behavior */}
       <Card>
         <CardHeader>
           <CardTitle className="text-md flex items-center space-x-2">
             <Settings2 className="h-4 w-4" />
             <span>AI Behavior</span>
           </CardTitle>
+           <CardDescription>Customize how the AI assistant responds and behaves.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Custom System Prompt */}
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Label htmlFor="system-prompt">Custom System Prompt</Label>
-              <Info className="h-3 w-3 text-muted-foreground" title="กำหนดบทบาทและพฤติกรรมของ AI" />
+              <Info className="h-3 w-3 text-muted-foreground" title="Define the AI's role and behavior" />
             </div>
             <Textarea
               id="system-prompt"
-              placeholder="บทบาทของคุณคือนักวิเคราะห์ข้อมูล Social Media ที่เชี่ยวชาญ..."
+              placeholder="Your role is an expert social media data analyst..."
               rows={6}
               value={localSettings.systemPrompt}
               onChange={(e) => handleSettingChange('systemPrompt', e.target.value)}
               className="resize-none"
             />
-            <div className="text-xs text-muted-foreground">
-              <strong>ตัวอย่าง:</strong> "คุณเป็นผู้เชี่ยวชาญด้าน Digital Marketing และ Social Listening ที่ให้คำแนะนำเชิงกลยุทธ์ ตอบคำถามด้วยภาษาไทยอย่างเป็นมิตรและใช้ emoji เพื่อให้น่าสนใจ"
-            </div>
           </div>
 
-          {/* Temperature */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Temperature: {localSettings.temperature}</Label>
               <Badge variant="outline" className="text-xs">
-                {localSettings.temperature <= 0.3 ? 'เฉพาะเจาะจง' : 
-                 localSettings.temperature <= 0.7 ? 'สมดุล' : 'สร้างสรรค์'}
+                {localSettings.temperature <= 0.3 ? 'Deterministic' : 
+                 localSettings.temperature <= 0.7 ? 'Balanced' : 'Creative'}
               </Badge>
             </div>
             <Slider
@@ -173,17 +152,16 @@ export function AISettings() {
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>เฉพาะเจาะจง</span>
-              <span>สร้างสรรค์</span>
+              <span>More Precise</span>
+              <span>More Creative</span>
             </div>
           </div>
 
-          {/* Max Tokens */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Max Tokens: {localSettings.maxTokens}</Label>
               <Badge variant="outline" className="text-xs">
-                ~{Math.round(localSettings.maxTokens * 0.75)} คำ
+                ~{Math.round(localSettings.maxTokens * 0.75)} words
               </Badge>
             </div>
             <Slider
@@ -195,14 +173,13 @@ export function AISettings() {
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>สั้น (100)</span>
-              <span>ยาว (2000)</span>
+              <span>Shorter (100)</span>
+              <span>Longer (2000)</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Action Buttons - ส่วนที่ขาดหาย */}
       <Card>
         <CardHeader>
           <CardTitle className="text-md flex items-center space-x-2">
@@ -213,7 +190,7 @@ export function AISettings() {
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              {hasUnsavedChanges ? 'มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก' : 'การตั้งค่าทั้งหมดได้รับการบันทึกแล้ว'}
+              {hasUnsavedChanges ? 'You have unsaved changes.' : 'All settings are up to date.'}
             </div>
             <div className="flex space-x-2">
               <Button 
@@ -223,7 +200,7 @@ export function AISettings() {
                 size="sm"
               >
                 <RotateCcw className="h-4 w-4 mr-2" />
-                รีเซ็ต
+                Reset
               </Button>
               <Button 
                 onClick={handleSave}
@@ -231,67 +208,10 @@ export function AISettings() {
                 size="sm"
               >
                 <Save className="h-4 w-4 mr-2" />
-                บันทึก
+                Save
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Presets - เพิ่มเติมสำหรับความสะดวก */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-md flex items-center space-x-2">
-            <Bot className="h-4 w-4" />
-            <span>Quick Presets</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleSettingChange('systemPrompt', 'คุณเป็นผู้เชี่ยวชาญด้าน Digital Marketing และ Social Listening ที่ให้คำแนะนำเชิงกลยุทธ์ ตอบคำถามด้วยภาษาไทยอย่างเป็นมิตรและใช้ emoji เพื่อให้น่าสนใจ');
-                handleSettingChange('temperature', 0.7);
-              }}
-            >
-              🎯 Marketing Expert
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleSettingChange('systemPrompt', 'คุณเป็นนักวิเคราะห์ข้อมูลที่เฉพาะเจาะจงและให้คำตอบที่แม่นยำ เน้นการวิเคราะห์เชิงลึกและข้อเท็จจริง');
-                handleSettingChange('temperature', 0.3);
-              }}
-            >
-              📊 Data Analyst
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleSettingChange('systemPrompt', 'คุณเป็นผู้จัดการ Crisis Management ที่ช่วยจัดการสถานการณ์วิกฤตและให้คำแนะนำการตอบสนองที่เหมาะสม');
-                handleSettingChange('temperature', 0.5);
-              }}
-            >
-              🚨 Crisis Manager
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleSettingChange('systemPrompt', 'คุณเป็นผู้ช่วยที่เป็นกันเองและสร้างสรรค์ ตอบคำถามด้วยรูปแบบสนุกสนานและเข้าใจง่าย');
-                handleSettingChange('temperature', 0.9);
-              }}
-            >
-              🎨 Creative Assistant
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            คลิกเพื่อใช้การตั้งค่าสำเร็จรูปที่เหมาะกับงานแต่ละประเภท
-          </p>
         </CardContent>
       </Card>
     </div>
