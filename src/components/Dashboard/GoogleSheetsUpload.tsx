@@ -10,12 +10,7 @@ import {
 } from 'lucide-react';
 import Papa from 'papaparse';
 import { SocialMention } from '@/types/dashboard';
-
-const SHEET_CONFIG = {
-  sheetId: '1pTvDqlnGmSKbIyg2t8dRVy08uOfe-dnji8pJNd6z0Cw',
-  sheetName: 'SCGDATA',
-  gid: 1494033773
-};
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface GoogleSheetsUploadProps {
   onDataUpload: (data: SocialMention[]) => void;
@@ -77,16 +72,24 @@ const processGoogleSheetData = (rawData: any[]): SocialMention[] => {
 };
 
 export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
+  const { settings } = useSettings();
+  const { sheetId, gid } = settings.googleSheetsSettings;
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const isConfigured = sheetId && gid;
+
   const buildCSVUrl = () => {
-    return `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.sheetId}/export?format=csv&gid=${SHEET_CONFIG.gid}`;
+    return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
   };
 
   const handleGoogleSheetsLoad = async () => {
+    if (!isConfigured) {
+      setError("Google Sheets settings are not configured. Please set them up first.");
+      return;
+    }
     setIsLoading(true);
     setError(null);
     setSuccess(false);
@@ -97,10 +100,7 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
       const csvUrl = buildCSVUrl();
       setProgress(40);
       
-      const response = await fetch(csvUrl, {
-        mode: 'cors',
-        cache: 'no-cache'
-      });
+      const response = await fetch(csvUrl, { mode: 'cors', cache: 'no-cache' });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}. Sheet may not be public or URL is incorrect.`);
@@ -153,7 +153,7 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
     <div className="space-y-4">
       <Button 
         onClick={handleGoogleSheetsLoad}
-        disabled={isLoading}
+        disabled={isLoading || !isConfigured}
         variant="outline"
         className="w-full justify-start"
       >
@@ -164,6 +164,12 @@ export function GoogleSheetsUpload({ onDataUpload }: GoogleSheetsUploadProps) {
         )}
         {isLoading ? 'Loading...' : 'Connect to Google Sheets'}
       </Button>
+
+      {!isConfigured && (
+        <p className="text-xs text-muted-foreground">
+          Please configure Google Sheets settings below to enable this feature.
+        </p>
+      )}
 
       {isLoading && (
         <div className="space-y-2">
