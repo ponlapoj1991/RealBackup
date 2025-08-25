@@ -6,7 +6,7 @@ import { Card } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { useDashboard } from '@/contexts/DashboardContext';
 
-const OPENAI_API_KEY = "";
+const OPENAI_API_KEY = "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";
 const OPENAI_MODEL = "gpt-4.1";
 const MAX_TOKENS = 20000;
 const TEMPERATURE = 0;
