@@ -21,6 +21,7 @@ const loadSettings = (): AppSettings => {
     const savedSettings = localStorage.getItem('app-settings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
+      // Deep merge to ensure all properties from initialSettings are present
       return {
         aiSettings: { ...initialSettings.aiSettings, ...parsed.aiSettings },
         googleSheetsSettings: { ...initialSettings.googleSheetsSettings, ...parsed.googleSheetsSettings }
